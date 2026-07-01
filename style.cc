@@ -1,3 +1,41 @@
+.resolucion {
+    width: 99%;
+    text-align: center;
+}
+
+/**Movil**/
+@media (min-width: 767px) {
+    .desktop {
+        display: block;
+    }
+    .Tablet {
+        display: none;
+    }
+}
+
+/**Tablet**/
+@media (min-width: 768px) and (max-width: 990px) {
+    .desktop {
+        display: none;
+    }
+    .Movil {
+        display: block;
+    }
+}
+
+/**Escritorio**/
+@media (min-width: 992px) {
+    .desktop {
+        display: block;
+    }
+    .Movil {
+        display: none;
+    }
+}
+
+    }
+}
+
 :root {
     --primary: #0b0f19;        /* Fondo oscuro profundo moderno */
     --sidebar-bg: #111827;     /* Fondo de la barra lateral */
