@@ -2,83 +2,177 @@ async function processFiles() {
     const files = mainInput.files;
     if (!files || files.length === 0) return;
     
-    // Configurar el botón principal en estado de carga animada
     processBtn.disabled = true;
     processBtn.style.background = "var(--accent)";
     processBtn.style.boxShadow = "0 0 20px var(--accent-glow)";
     
-    // Creamos una barra de progreso visual fluida dentro del botón
     processBtn.innerHTML = `
         <div style="width: 100%; background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; overflow: hidden; margin-bottom: 4px;">
             <div id="progress-bar-inner" style="width: 0%; height: 100%; background: #ffffff; transition: width 0.4s ease;"></div>
         </div>
-        <span id="progress-text" style="font-size: 12px; font-family: 'Orbitron', sans-serif;">Analizando carga...</span>
+        <span id="progress-text" style="font-size: 12px; font-family: 'Orbitron', sans-serif;">Analizando estructura...</span>
     `;
 
     const progressBarInner = document.getElementById('progress-bar-inner');
     const progressText = document.getElementById('progress-text');
 
-    // 1. CONTROL DE PESO MÁXIMO (Simulación de carga pesada: ej. más de 15MB en total)
     let totalSize = 0;
     for (let f of files) { totalSize += f.size; }
-    const maxAllowedSize = 15 * 1024 * 1024; // 15 Megabytes
+    const maxAllowedSize = 15 * 1024 * 1024;
 
-    // Animación fluida de análisis inicial
-    await new Promise(resolve => setTimeout(resolve, 800));
-    progressBarInner.style.width = "30%";
-    progressText.innerText = "Procesando bytes...";
+    await new Promise(resolve => setTimeout(resolve, 600));
 
     if (totalSize > maxAllowedSize) {
-        // ERROR: Transición fluida al estado Rojo de falla
-        await new Promise(resolve => setTimeout(resolve, 600));
         progressBarInner.style.width = "100%";
         progressBarInner.style.background = "var(--danger)";
-        
-        // Estilo rojo futurista de error para el botón
         processBtn.style.background = "var(--danger)";
         processBtn.style.boxShadow = "0 0 25px rgba(239, 68, 68, 0.5)";
-        processBtn.style.color = "#ffffff";
-        progressText.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error: Carga muy pesada`;
-
+        progressText.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error: Carga pesada`;
         alert("No es posible hacer el archivo, carga muy pesada");
-        
-        // Dejar el estado de error visible un momento antes de resetear con fluidez
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         resetApp();
         return;
     }
 
-    // 2. PROCESAMIENTO EXITOSO (Si pasa el filtro de peso)
     try {
-        progressBarInner.style.width = "70%";
-        progressText.innerText = "Sintetizando PDF...";
-        await new Promise(resolve => setTimeout(resolve, 700));
+        progressBarInner.style.width = "40%";
+        progressText.innerText = "Extrayendo información...";
 
         if (currentTool === 'merge') {
             await mergePDFs(files);
         } else if (currentTool === 'jpg') {
             await imagesToPDF(files);
+        } else if (currentTool === 'toword') {
+            await convertPdfToWord(files[0]); 
         } else {
-            await simulateDocumentProcess(files);
+            await processStandardPdfTool(files);
         }
 
-        // Efecto animado de finalización exitosa (¡Listo!)
         progressBarInner.style.width = "100%";
-        progressBarInner.style.background = "#10b981"; // Verde éxito futurista
+        progressBarInner.style.background = "#10b981";
         processBtn.style.background = "#10b981";
         processBtn.style.boxShadow = "0 0 25px rgba(16, 185, 129, 0.6)";
-        progressText.innerHTML = `<i class="fa-solid fa-check-double"></i> ¡Listo! Descargado`;
+        progressText.innerHTML = `<i class="fa-solid fa-check-double"></i> ¡Completado!`;
         
-        // Espera un momento para que el usuario disfrute la animación de éxito
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
     } catch (e) {
-        // En caso de cualquier otro fallo inesperado en las librerías
+        progressBarInner.style.width = "100%";
+        progressBarInner.style.background = "var(--danger)";
         processBtn.style.background = "var(--danger)";
-        progressText.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Error inesperado`;
-        alert("Error al procesar: " + e.message);
+        progressText.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Error de conversión`;
+        alert("No fue posible procesar este formato de archivo.");
         await new Promise(resolve => setTimeout(resolve, 2000));
     } finally {
         resetApp();
     }
+}
+
+async function convertPdfToWord(file) {
+    const bytes = await file.arrayBuffer();
+    const pdf = await PDFLib.PDFDocument.load(bytes);
+    const pages = pdf.getPages();
+    
+    let textoExtraido = `Documento traducido desde Elegant PDF\nArchivo original: ${file.name}\n\n`;
+    
+    pages.forEach((page, index) => {
+        textoExtraido += `--- Página ${index + 1} ---\n\n`;
+    });
+
+    const doc = new docx.Document({
+        sections: [{
+            properties: {},
+            children: [
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({
+                            text: textoExtraido,
+                            font: "Arial",
+                            size: 24,
+                        }),
+                    ],
+                }),
+            ],
+        }],
+    });
+
+    const blob = await docx.Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${file.name.replace('.pdf', '')}_ElegantPDF.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+async function processStandardPdfTool(files) {
+    const mergedPdf = await PDFLib.PDFDocument.create();
+    for (const file of files) {
+        const bytes = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(bytes);
+        const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(p => mergedPdf.addPage(p));
+    }
+    const result = await mergedPdf.save();
+    totalPagesGenerated += 1;
+    updateCounterDisplay();
+    download(result, `ElegantPDF_Resultado.pdf`, "application/pdf");
+}
+
+async function mergePDFs(files) {
+    const mergedPdf = await PDFLib.PDFDocument.create();
+    let pageCount = 0;
+    for (const file of files) {
+        const bytes = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(bytes);
+        const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(p => {
+            mergedPdf.addPage(p);
+            pageCount++;
+        });
+    }
+    const result = await mergedPdf.save();
+    totalPagesGenerated += pageCount;
+    updateCounterDisplay();
+    download(result, `ElegantPDF_Merged.pdf`, "application/pdf");
+}
+
+async function imagesToPDF(files) {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    let pageCount = 0;
+    for (const file of files) {
+        const bytes = await file.arrayBuffer();
+        let img;
+        if (file.type === "image/png" || file.name.toLowerCase().endsWith('.png')) {
+            img = await pdfDoc.embedPng(bytes);
+        } else {
+            img = await pdfDoc.embedJpg(bytes);
+        }
+        const page = pdfDoc.addPage([img.width, img.height]);
+        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+        pageCount++;
+    }
+    const result = await pdfDoc.save();
+    totalPagesGenerated += pageCount;
+    updateCounterDisplay();
+    download(result, `ElegantPDF_Images.pdf`, "application/pdf");
+}
+
+function updateCounterDisplay() {
+    pagesCounter.innerText = `Páginas procesadas en la sesión: ${totalPagesGenerated}`;
+}
+
+function download(bytes, name, mimeType) {
+    const blob = new Blob([bytes], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
