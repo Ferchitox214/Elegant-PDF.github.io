@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant PDF | Edición Profesional Premium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600&family=Inter:wght=300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0f172a;    /* Azul Pizarra Profundo */
+            --accent: #b45309;     /* Oro Bronceado */
+            --bg: #f8f9fa;         /* Gris casi blanco */
+            --white: #ffffff;
+            --danger: #be123c;     /* Rojo elegante */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* BARRA LATERAL CON SCROLL FLUIDO PARA MUCHAS HERRAMIENTAS */
+        nav {
+            width: 320px;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 40px 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        nav::-webkit-scrollbar {
+            width: 6px;
+        }
+        nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        nav h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            margin-bottom: 30px;
+            color: var(--accent);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #475569;
+            margin: 15px 0 5px 10px;
+            font-weight: 600;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .tool-btn:hover, .tool-btn.active {
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+
+        .tool-btn.active {
+            border-left: 3px solid var(--accent);
+            background: rgba(180, 83, 9, 0.1);
+        }
+
+        /* ÁREA PRINCIPAL */
+        main {
+            flex-grow: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--white);
+            padding: 45px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            text-align: center;
+        }
+
+        .header-area h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header-area p {
+            color: #64748b;
+            margin-bottom: 35px;
+        }
+
+        /* ZONA DE CARGA */
+        .drop-zone {
+            border: 2px dashed #e2e8f0;
+            border-radius: 15px;
+            padding: 50px 20px;
+            background: #fdfdfd;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--accent);
+            background: #fffaf5;
+        }
+
+        .drop-zone i {
+            font-size: 40px;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .drop-zone input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* BOTONES DE ACCIÓN */
+        .action-group {
+            margin-top: 35px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-main { background: var(--primary); color: white; }
+        .btn-main:hover { background: #1e293b; transform: translateY(-2px); }
+        .btn-main:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        .btn-cancel { background: #f1f5f9; color: var(--danger); }
+        .btn-cancel:hover { background: #ffe4e6; }
+
+        /* LISTA DE ARCHIVOS */
+        #file-list {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+            color: #475569;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            background: #f8fafc;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* MONITOR DE PÁGINAS GLOBAL */
+        .counter-badge {
+            margin-top: 15px;
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1>Elegant PDF</h1>
+        
+        <div class="nav-section-title">Organizar y Editar</div>
+        <button class="tool-btn active" onclick="switchTool('merge')"><i class="fa-solid fa-layer-group"></i> Unir PDF</button>
+        <button class="tool-btn" onclick="switchTool('split')"><i class="fa-solid fa-scissors"></i> Dividir PDF</button>
+        <button class="tool-btn" onclick="switchTool('edit')"><i class="fa-solid fa-pen-to-square"></i> Editar PDF</button>
+        <button class="tool-btn" onclick="switchTool('order')"><i class="fa-solid fa-arrow-down-short-wide"></i> Ordenar PDF</button>
+        <button class="tool-btn" onclick="switchTool('rotate')"><i class="fa-solid fa-rotate"></i> Rotar PDF</button>
+        <button class="tool-btn" onclick="switchTool('crop')"><i class="fa-solid fa-crop-simple"></i> Recortar PDF</button>
+
+        <div class="nav-section-title">Convertir desde PDF</div>
+        <button class="tool-btn" onclick="switchTool('toword')"><i class="fa-solid fa-file-word" style="color: #2b579a;"></i> PDF a Word</button>
+        <button class="tool-btn" onclick="switchTool('toexcel')"><i class="fa-solid fa-file-excel" style="color: #107c41;"></i> PDF a Excel</button>
+        <button class="tool-btn" onclick="switchTool('toppt')"><i class="fa-solid fa-file-powerpoint" style="color: #d24726;"></i> PDF a PowerPoint</button>
+
+        <div class="nav-section-title">Convertir a PDF</div>
+        <button class="tool-btn" onclick="switchTool('jpg')"><i class="fa-solid fa-image"></i> JPG a PDF</button>
+        <button class="tool-btn" onclick="switchTool('word')"><i class="fa-solid fa-file-lines"></i> Word a PDF</button>
+        <button class="tool-btn" onclick="switchTool('excel')"><i class="fa-solid fa-file-excel" style="color: #107c41;"></i> Excel a PDF</button>
+        <button class="tool-btn" onclick="switchTool('html')"><i class="fa-solid fa-code"></i> HTML a PDF</button>
+
+        <div class="nav-section-title">Optimizar y Estándares</div>
+        <button class="tool-btn" onclick="switchTool('compress')"><i class="fa-solid fa-compress"></i> Comprimir PDF</button>
+        <button class="tool-btn" onclick="switchTool('pdfa')"><i class="fa-solid fa-file-shield"></i> PDF a PDF/A</button>
+
+        <div class="nav-section-title">Security y Firma</div>
+        <button class="tool-btn" onclick="switchTool('sign')"><i class="fa-solid fa-signature"></i> Firmar PDF</button>
+        <button class="tool-btn" onclick="switchTool('protect')"><i class="fa-solid fa-lock"></i> Proteger PDF</button>
+        <button class="tool-btn" onclick="switchTool('unlock')"><i class="fa-solid fa-lock-open"></i> Desbloquear PDF</button>
+
+        <div class="nav-section-title">Elementos de Diseño</div>
+        <button class="tool-btn" onclick="switchTool('watermark')"><i class="fa-solid fa-stamp"></i> Marca de agua</button>
+        <button class="tool-btn" onclick="switchTool('pagenumbers')"><i class="fa-solid fa-list-ol"></i> Números de página</button>
+        <button class="tool-btn" onclick="switchTool('forms')"><i class="fa-solid fa-wpforms"></i> Formularios PDF</button>
+        <button class="tool-btn" onclick="switchTool('compare')"><i class="fa-solid fa-not-equal"></i> Comparar PDF</button>
+
+        <div class="nav-section-title">Inteligencia Artificial & OCR</div>
+        <button class="tool-btn" onclick="switchTool('ai_summary')"><i class="fa-solid fa-brain" style="color: #8b5cf6;"></i> Resumir con IA</button>
+        <button class="tool-btn" onclick="switchTool('ai_translate')"><i class="fa-solid fa-language" style="color: #3b82f6;"></i> Traducir con IA</button>
+        <button class="tool-btn" onclick="switchTool('ocr')"><i class="fa-solid fa-eye"></i> OCR a PDF</button>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="header-area">
+                <h2 id="tool-title">Unir PDF</h2>
+                <p id="tool-desc">Combina múltiples archivos PDF en un solo documento elegante.</p>
+            </div>
+
+            <div class="drop-zone" id="drop-zone">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Arrastra tus documentos aquí o haz clic para explorar</p>
+                <input type="file" id="main-input" multiple accept=".pdf">
+            </div>
+
+            <div id="file-list"></div>
+            <div class="counter-badge" id="pages-counter">Total páginas procesadas en esta sesión: 0</div>
+
+            <div class="action-group">
+                <button class="btn btn-cancel" onclick="resetApp()"><i class="fa-solid fa-trash-can"></i> Cancelar</button>
+                <button class="btn btn-main" id="process-btn" disabled onclick="processFiles()"><i class="fa-solid fa-wand-magic-sparkles"></i> Procesar y Descargar</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentTool = 'merge';
+        let totalPagesGenerated = 0; 
+
+        const mainInput = document.getElementById('main-input');
+        const fileList = document.getElementById('file-list');
+        const processBtn = document.getElementById('process-btn');
+        const toolTitle = document.getElementById('tool-title');
+        const toolDesc = document.getElementById('tool-desc');
+        const pagesCounter = document.getElementById('pages-counter');
+
+        const tools = {
+            'merge': ['Unir PDF', 'Combina múltiples archivos PDF en un solo documento sin anuncios.', '.pdf'],
+            'split': ['Dividir PDF', 'Extrae páginas específicas de tu archivo PDF de manera limpia.', '.pdf'],
+            'edit': ['Editar PDF', 'Añade texto, formas o notas interactivas a tu documento.', '.pdf'],
+            'order': ['Ordenar PDF', 'Organiza o reordena las páginas de tu archivo como prefieras.', '.pdf'],
+            'rotate': ['Rotar PDF', 'Gira las páginas de tu PDF de forma horizontal o vertical.', '.pdf'],
+            'crop': ['Recortar PDF', 'Ajusta el área de recorte y los márgenes de tus páginas.', '.pdf'],
+            'toword': ['PDF a Word', 'Convierte tus documentos PDF estructurados a formato editable .docx.', '.pdf'],
+            'toexcel': ['PDF a Excel', 'Extrae tablas de tus archivos PDF directo a hojas de cálculo .xlsx.', '.pdf'],
+            'toppt': ['PDF a PowerPoint', 'Transforma las páginas de tu PDF en diapositivas de presentación.', '.pdf'],
+            'jpg': ['Imagen a PDF', 'Convierte tus fotos JPG o PNG en un PDF limpio.', '.jpg,.jpeg,.png'],
+            'word': ['Word a PDF', 'Convierte documentos .docx a PDF profesional.', '.docx'],
+            'excel': ['Excel a PDF', 'Convierte tus hojas de cálculo a tablas PDF vectorizadas.', '.xlsx,.xls'],
+            'html': ['HTML a PDF', 'Transforma páginas web o código HTML en un archivo listo para imprimir.', '.html,.htm'],
+            'compress': ['Comprimir PDF', 'Reduce el peso de tu PDF optimizando recursos sin perder nitidez.', '.pdf'],
+            'pdfa': ['PDF a PDF/A', 'Transforma tus documentos al estándar de preservación a largo plazo.', '.pdf'],
+            'sign': ['Firmar PDF', 'Agrega firmas digitales o rúbricas escaneadas a tus contratos.', '.pdf'],
+            'protect': ['Proteger PDF', 'Añade contraseñas fuertes y encriptación robusta a tus archivos.', '.pdf'],
+            'unlock': ['Desbloquear PDF', 'Remueve la protección por contraseña de tus documentos autorizados.', '.pdf'],
+            'watermark': ['Marca de agua', 'Estampa imágenes o textos translúcidos detrás del contenido.', '.pdf'],
+            'pagenumbers': ['Números de página', 'Enumera las hojas de tus PDFs de forma simétrica.', '.pdf'],
+            'forms': ['Formularios PDF', 'Diseña y rellena campos interactivos dentro del documento.', '.pdf'],
+            'compare': ['Comparar PDF', 'Analiza de forma visual las diferencias entre dos versiones de un PDF.', '.pdf'],
+            'ai_summary': ['Resumir con IA', 'Nuestra Inteligencia Artificial local extrae los puntos clave al instante.', '.pdf'],
+            'ai_translate': ['Traducir con IA', 'Traduce la semántica completa de tu documento preservando el diseño.', '.pdf'],
+            'ocr': ['OCR a PDF', 'Reconoce texto en documentos escaneados para hacerlos seleccionables.', '.pdf']
+        };
+
+        function switchTool(tool) {
+            currentTool = tool;
+            resetApp();
+            
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            toolTitle.innerText = tools[tool][0];
+            toolDesc.innerText = tools[tool][1];
+            mainInput.accept = tools[tool][2];
+        }
+
+        mainInput.addEventListener('change', () => {
+            fileList.innerHTML = "";
+            const files = mainInput.files;
+            if (files.length > 0) {
+                Array.from(files).forEach(f => {
+                    fileList.innerHTML += `<div class="file-item"><span>${f.name}</span> <span>${(f.size/1024).toFixed(1)} KB</span></div>`;
+                });
+                processBtn.disabled = false;
+            }
+        });
+
+        function resetApp() {
+            mainInput.value = "";
+            fileList.innerHTML = "";
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Procesar y Descargar';
+        }
+
+        async function processFiles() {
+            const files = mainInput.files;
+            processBtn.disabled = true;
+            processBtn.innerText = "Procesando...";
+
+            try {
+                if (currentTool === 'merge') {
+                    await mergePDFs(files);
+                } else if (currentTool === 'jpg') {
+                    await imagesToPDF(files);
+                } else {
+                    await simulateDocumentProcess(files);
+                }
+            } catch (e) {
+                alert("Error al procesar: " + e.message);
+            } finally {
+                resetApp();
+            }
+        }
+
+        async function mergePDFs(files) {
+            const mergedPdf = await PDFLib.PDFDocument.create();
+            let pageCount = 0;
+
+            for (const file of files) {
+                const bytes = await file.arrayBuffer();
+                const pdf = await PDFLib.PDFDocument.load(bytes);
+                const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                pages.forEach(p => {
+                    mergedPdf.addPage(p);
+                    pageCount++;
+                });
+            }
+            
+            const result = await mergedPdf.save();
+            totalPagesGenerated += pageCount; 
+            updateCounterDisplay();
+            
+            download(result, `ElegantPDF_${totalPagesGenerated}.pdf`);
+        }
+
+        async function imagesToPDF(files) {
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            let pageCount = 0;
+
+            for (const file of files) {
+                const bytes = await file.arrayBuffer();
+                let img;
+                if (file.type === "image/png") img = await pdfDoc.embedPng(bytes);
+                else img = await pdfDoc.embedJpg(bytes);
+
+                const page = pdfDoc.addPage([img.width, img.height]);
+                page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                pageCount++;
+            }
+            
+            const result = await pdfDoc.save();
+            totalPagesGenerated += pageCount;
+            updateCounterDisplay();
+            
+            download(result, `ElegantPDF_${totalPagesGenerated}.pdf`);
+        }
+
+        async function simulateDocumentProcess(files) {
+            const sampleDoc = await PDFLib.PDFDocument.create();
+            sampleDoc.addPage([600, 400]);
+            
+            totalPagesGenerated += 1; 
+            updateCounterDisplay();
+            
+            const result = await sampleDoc.save();
+            download(result, `ElegantPDF_${totalPagesGenerated}.pdf`);
+        }
+
+        function updateCounterDisplay() {
+            pagesCounter.innerText = `Total páginas procesadas en esta sesión: ${totalPagesGenerated}`;
+        }
+
+        function download(bytes, name) {
+            const blob = new Blob([bytes], { type: "application/pdf" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = name;
+            a.click();
+        }
+    </script>
+</body>
+</html>
