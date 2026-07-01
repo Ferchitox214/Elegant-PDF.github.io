@@ -90,40 +90,90 @@ button:disabled {
       cursor: not-allowed;
 }
 
-/* --- CONFIGURACIÓN PARA CELULARES --- */
+/* =======================================================
+   INTERFAZ PARA CELULARES
+   ======================================================= */
 @media (max-width: 768px) {
+    
+    /* 1. Hace que todo el cuerpo fluya hacia abajo verticalmente */
     body {
-        flex-direction: column !important; /* Pone el menú arriba y el contenido abajo */
+        display: flex !important;
+        flex-direction: column !important;
         height: auto !important;
         min-height: 100vh;
+        margin: 0 !important;
         padding: 0 !important;
+        background-color: #f8f9fa !important; /* Fondo gris claro limpio como iLovePDF */
     }
 
-    /* Ajuste para el menú oscuro de la izquierda (organizadores) */
-    aside, .sidebar, [class*="sidebar"], [class*="menu"] {
+    /* 2. MENU LATERAL (Elegant PDF): En cel se convierte en una barra superior discreta */
+    aside, .sidebar, [class*="sidebar"] {
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
+        position: relative !important;
         padding: 15px !important;
         box-sizing: border-box;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center;
+        border-bottom: 2px solid rgba(0,0,0,0.1);
     }
 
-    /* Ajuste para la zona blanca de la derecha (donde se sube el PDF) */
+    /* Oculta los otros enlaces del menú que estorban en cel para que no se amontonen */
+    aside a, .sidebar a, .sidebar nav, [class*="sidebar"] ul {
+        display: none !important; /* iLovePDF solo muestra la herramienta actual en uso */
+    }
+
+    /* Mantiene solo el título "Elegant PDF" visible arriba */
+    aside h1, .sidebar h1, [class*="sidebar"] .logo {
+        display: block !important;
+        margin: 0 !important;
+        font-size: 22px !important;
+    }
+
+    /* 3. ZONA BLANCA PRINCIPAL: Se expande al 100% ocupando toda la pantalla */
     main, .main-content, [class*="content"], [class*="container"] {
+        flex: 1 !important;
         width: 100% !important;
         max-width: 100% !important;
         padding: 20px !important;
+        margin: 0 !important;
         box-sizing: border-box;
-    }
-
-    /* Ajuste para los botones de abajo (Cancelar, Procesar) */
-    .buttons-container, [class*="buttons"] {
+        display: flex !important;
         flex-direction: column !important;
-        gap: 10px !important;
-        width: 100% !important;
+        justify-content: space-between !important; /* Empuja los botones abajo */
     }
 
-    button {
-        width: 100% !important; /* Los botones ocupan todo el ancho en cel */
+    /* 4. EL CUADRO DE ARRASTRAR PDF: Se vuelve gigante y cómodo para el dedo */
+    .drop-zone, [class*="dropzone"], [class*="upload"] {
+        width: 100% !important;
+        height: 280px !important; /* Altura ideal fija para celulares */
+        margin: 20px 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    /* 5. BOTONES DE ACCIÓN: Se alinean abajo, grandes y de lado a lado */
+    .buttons-container, [class*="buttons"], .action-buttons {
+        display: flex !important;
+        flex-direction: column !important; /* Uno abajo del otro */
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: auto !important; /* Se pegan al final de la pantalla */
+        padding-bottom: 20px !important;
+    }
+
+    /* Botones gigantes estilo app móvil */
+    button, .btn, [class*="button"] {
+        width: 100% !important;
+        height: 50px !important; /* Más altos para que sea fácil picarles con el pulgar */
+        font-size: 16px !important;
+        font-weight: bold !important;
+        margin: 0 !important;
+        border-radius: 8px !important;
     }
 }
