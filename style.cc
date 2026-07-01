@@ -1,41 +1,3 @@
-.resolucion {
-    width: 99%;
-    text-align: center;
-}
-
-/**Movil**/
-@media (min-width: 767px) {
-    .desktop {
-        display: block;
-    }
-    .Tablet {
-        display: none;
-    }
-}
-
-/**Tablet**/
-@media (min-width: 768px) and (max-width: 990px) {
-    .desktop {
-        display: none;
-    }
-    .Movil {
-        display: block;
-    }
-}
-
-/**Escritorio**/
-@media (min-width: 992px) {
-    .desktop {
-        display: block;
-    }
-    .Movil {
-        display: none;
-    }
-}
-
-    }
-}
-
 :root {
     --primary: #0b0f19;        /* Fondo oscuro profundo moderno */
     --sidebar-bg: #111827;     /* Fondo de la barra lateral */
@@ -43,7 +5,7 @@
     --accent-glow: rgba(249, 115, 22, 0.25);
     --bg: #090d16;             /* Fondo general de la app */
     --card-bg: #ffffff;        /* Blanco para el contenedor principal de herramientas */
-    --text-dark: #0f172a;      /* Texto principal oscuro dentro de la tarjeta blanca */
+    --text-dark: #0f172a;      /* Texto principal oscuro dentro de la tarjeta */
     --text-muted: #64748b;     /* Texto secundario gris */
     --text-light: #f8fafc;     /* Texto blanco para la barra lateral */
     --danger: #ef4444;         /* Rojo moderno para alertas/cancelar */
@@ -65,7 +27,33 @@ body {
 }
 
 /* ==========================================================================
-   HEADER PARA CELULARES (Solo se activa en pantallas chicas)
+   CLASES DE VISIBILIDAD (Corregidas y simplificadas)
+   ========================================================================== */
+.resolucion {
+    width: 99%;
+    text-align: center;
+}
+
+/* Por defecto (Móvil primero): Ocultamos escritorio */
+.desktop {
+    display: none;
+}
+.movil {
+    display: block;
+}
+
+/* Pantallas medianas y grandes (Desktop / Tablet) */
+@media (min-width: 768px) {
+    .desktop {
+        display: block;
+    }
+    .movil {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   HEADER PARA CELULARES
    ========================================================================== */
 .mobile-header {
     display: none;
@@ -181,7 +169,7 @@ nav h1 {
 }
 
 /* ==========================================================================
-   ÁREA DE TRABAJO PRINCIPAL (Contenedor Blanco Premium)
+   ÁREA DE TRABAJO PRINCIPAL
    ========================================================================== */
 main {
     flex-grow: 1;
@@ -198,7 +186,7 @@ main {
 .container {
     max-width: 750px;
     width: 100%;
-    background: var(--card-bg); /* Fondo Blanco Limpio */
+    background: var(--card-bg);
     padding: 50px 40px;
     border-radius: 24px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
@@ -349,7 +337,7 @@ main {
 }
 
 /* ==========================================================================
-   INTERFAZ TÁCTIL EXCLUSIVA PARA CELULARES (Estilo iLovePDF)
+   INTERFAZ TÁCTIL EXCLUSIVA PARA CELULARES
    ========================================================================== */
 @media (max-width: 992px) {
     .mobile-header { 
@@ -357,19 +345,19 @@ main {
     }
     
     nav {
-        transform: translateX(-100%); /* Escondido a la izquierda */
+        transform: translateX(-100%);
         padding-top: 80px; 
         width: 280px;
     }
 
     nav.open {
-        transform: translateX(0); /* Entra deslizándose con suavidad */
+        transform: translateX(0);
     }
 
     main {
         margin-left: 0;
         width: 100%;
-        padding: 90px 16px 30px 16px; /* Espacio superior para que no tape la barra móvil */
+        padding: 90px 16px 30px 16px;
     }
 
     .sidebar-overlay.active {
@@ -381,7 +369,7 @@ main {
     }
     
     .action-group {
-        flex-direction: column-reverse; /* El botón principal queda arriba en celular, más cómodo */
+        flex-direction: column-reverse;
     }
     
     .btn { 

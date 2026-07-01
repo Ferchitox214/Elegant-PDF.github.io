@@ -5,30 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elegant PDF | Edición Profesional Premium</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600&family=Inter:wght=300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght=300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
-
-</head>
-<body>
-     <div class="Resolucion"
-          </div class="Desktop">
-                <hi>Esto es un ordenador</h1>
-        </div>
-        </div class="Tablet">
-                <hi>Esto es un Tablet</h1>
-        </div>
-        </div class="Mobil">
-                <hi>Esto es un Mobil</h1>
-                     
-                   </div>
-                </div>
-</body>
-</html>
 
     <style>
         :root {
@@ -234,9 +216,25 @@
             letter-spacing: 0.5px;
         }
 
+        /* Vistas de Resolución corregidas */
+        .Resolucion {
+            display: none; /* Puedes controlar su visibilidad con media queries si lo deseas */
+        }
     </style>
 </head>
 <body>
+
+    <div class="Resolucion">
+        <div class="Desktop">
+            <h3>Esto es un ordenador</h3>
+        </div>
+        <div class="Tablet">
+            <h3>Esto es una Tablet</h3>
+        </div>
+        <div class="Mobil">
+            <h3>Esto es un Móvil</h3>
+        </div>
+    </div>
 
     <nav>
         <h1>Elegant PDF</h1>
@@ -357,15 +355,10 @@
             toolDesc.innerText = tools[tool][1];
             mainInput.setAttribute('accept', tools[tool][2]);
             
-            // Actualizar el texto indicativo de la zona de arrastre
             if(tool === 'jpg') {
                 dropZoneText.innerText = "Arrastra tus imágenes aquí o haz clic para explorar";
             } else {
                  dropZoneText.innerText = "Arrastra tus documentos aquí o haz clic para explorar";
-            }
-            if (window.innerWidth <= 992) { toggleSidebar(); }
-    }
-                dropZoneText.innerText = "Arrastra tus documentos aquí o haz clic para explorar";
             }
         }
 
@@ -387,6 +380,19 @@
             processBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Procesar y Descargar';
         }
 
+        function updateCounterDisplay() {
+            pagesCounter.innerText = `Total páginas procesadas en esta sesión: ${totalPagesGenerated}`;
+        }
+
+        // Función simulada para descarga (Se asume existente o integrada con pdf-lib)
+        function download(bytes, filename) {
+            const blob = new Blob([bytes], { type: "application/pdf" });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
         async function processFiles() {
             const files = mainInput.files;
             if (!files || files.length === 0) return;
@@ -400,7 +406,7 @@
                 } else if (currentTool === 'jpg') {
                     await imagesToPDF(files);
                 } else {
-                    await simulateDocumentProcess(files);
+                    alert("Función en desarrollo para esta herramienta.");
                 }
             } catch (e) {
                 alert("Error al procesar: " + e.message);
@@ -443,7 +449,6 @@
                     img = await pdfDoc.embedJpg(bytes);
                 }
 
-                // Crear página ajustada al tamaño exacto de la imagen cargada
                 const page = pdfDoc.addPage([img.width, img.height]);
                 page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
                 pageCount++;
@@ -455,5 +460,6 @@
             
             download(result, `ElegantPDF_Images.pdf`);
         }
-
-        
+    </script>
+</body>
+</html>
