@@ -1,91 +1,84 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+async function processFiles() {
+    const files = mainInput.files;
+    if (!files || files.length === 0) return;
+    
+    // Configurar el botón principal en estado de carga animada
+    processBtn.disabled = true;
+    processBtn.style.background = "var(--accent)";
+    processBtn.style.boxShadow = "0 0 20px var(--accent-glow)";
+    
+    // Creamos una barra de progreso visual fluida dentro del botón
+    processBtn.innerHTML = `
+        <div style="width: 100%; background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+            <div id="progress-bar-inner" style="width: 0%; height: 100%; background: #ffffff; transition: width 0.4s ease;"></div>
+        </div>
+        <span id="progress-text" style="font-size: 12px; font-family: 'Orbitron', sans-serif;">Analizando carga...</span>
+    `;
 
-body {
-    background-color: #f4f7f6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
+    const progressBarInner = document.getElementById('progress-bar-inner');
+    const progressText = document.getElementById('progress-text');
 
-.card {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-    text-align: center;
-    max-width: 500px;
-    width: 100%;
-}
+    // 1. CONTROL DE PESO MÁXIMO (Simulación de carga pesada: ej. más de 15MB en total)
+    let totalSize = 0;
+    for (let f of files) { totalSize += f.size; }
+    const maxAllowedSize = 15 * 1024 * 1024; // 15 Megabytes
 
-h1 {
-    color: #e53935; /* Un color rojo similar al de iLovePDF */
-    margin-bottom: 10px;
-}
+    // Animación fluida de análisis inicial
+    await new Promise(resolve => setTimeout(resolve, 800));
+    progressBarInner.style.width = "30%";
+    progressText.innerText = "Procesando bytes...";
 
-.subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 30px;
-}
+    if (totalSize > maxAllowedSize) {
+        // ERROR: Transición fluida al estado Rojo de falla
+        await new Promise(resolve => setTimeout(resolve, 600));
+        progressBarInner.style.width = "100%";
+        progressBarInner.style.background = "var(--danger)";
+        
+        // Estilo rojo futurista de error para el botón
+        processBtn.style.background = "var(--danger)";
+        processBtn.style.boxShadow = "0 0 25px rgba(239, 68, 68, 0.5)";
+        processBtn.style.color = "#ffffff";
+        progressText.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error: Carga muy pesada`;
 
-.drop-zone {
-    border: 2px dashed #e53935;
-    border-radius: 8px;
-    padding: 40px 20px;
-    background-color: #fff8f8;
-    cursor: pointer;
-    position: relative;
-    margin-bottom: 25px;
-    transition: background 0.3s;
-}
+        alert("No es posible hacer el archivo, carga muy pesada");
+        
+        // Dejar el estado de error visible un momento antes de resetear con fluidez
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        resetApp();
+        return;
+    }
 
-.drop-zone:hover {
-    background-color: #ffebee;
-}
+    // 2. PROCESAMIENTO EXITOSO (Si pasa el filtro de peso)
+    try {
+        progressBarInner.style.width = "70%";
+        progressText.innerText = "Sintetizando PDF...";
+        await new Promise(resolve => setTimeout(resolve, 700));
 
-/* Ocultamos el input feo por defecto pero lo dejamos cliqueable en toda la zona */
-.drop-zone input[type="file"] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
+        if (currentTool === 'merge') {
+            await mergePDFs(files);
+        } else if (currentTool === 'jpg') {
+            await imagesToPDF(files);
+        } else {
+            await simulateDocumentProcess(files);
+        }
 
-#file-count {
-    display: block;
-    margin-top: 15px;
-    font-size: 13px;
-    color: #888;
-    font-weight: bold;
-}
+        // Efecto animado de finalización exitosa (¡Listo!)
+        progressBarInner.style.width = "100%";
+        progressBarInner.style.background = "#10b981"; // Verde éxito futurista
+        processBtn.style.background = "#10b981";
+        processBtn.style.boxShadow = "0 0 25px rgba(16, 185, 129, 0.6)";
+        progressText.innerHTML = `<i class="fa-solid fa-check-double"></i> ¡Listo! Descargado`;
+        
+        // Espera un momento para que el usuario disfrute la animación de éxito
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-button {
-    background-color: #e53935;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    transition: background 0.3s;
-}
-
-button:hover {
-    background-color: #d32f2f;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+    } catch (e) {
+        // En caso de cualquier otro fallo inesperado en las librerías
+        processBtn.style.background = "var(--danger)";
+        progressText.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Error inesperado`;
+        alert("Error al procesar: " + e.message);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    } finally {
+        resetApp();
+    }
 }

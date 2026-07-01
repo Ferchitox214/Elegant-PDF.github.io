@@ -1,187 +1,353 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root {
+    --primary: #0b0f19;        /* Fondo oscuro profundo moderno */
+    --sidebar-bg: #111827;     /* Fondo de la barra lateral */
+    --accent: #f97316;         /* Naranja Eléctrico Vibrante */
+    --accent-glow: rgba(249, 115, 22, 0.25);
+    --bg: #090d16;             /* Fondo general de la app */
+    --card-bg: #ffffff;        /* Blanco para el contenedor principal de herramientas */
+    --text-dark: #0f172a;      /* Texto principal oscuro dentro de la tarjeta blanca */
+    --text-muted: #64748b;     /* Texto secundario gris */
+    --text-light: #f8fafc;     /* Texto blanco para la barra lateral */
+    --danger: #ef4444;         /* Rojo moderno para alertas/cancelar */
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
 }
 
 body {
-    background-color: #f4f7f6;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text-light);
     display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.card {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+/* ==========================================================================
+   HEADER PARA CELULARES (Solo se activa en pantallas chicas)
+   ========================================================================== */
+.mobile-header {
+    display: none;
+    width: 100%;
+    background: var(--sidebar-bg);
+    padding: 15px 20px;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0; 
+    left: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mobile-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: 1px;
+}
+
+.menu-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.menu-toggle:hover {
+    color: var(--accent);
+}
+
+/* ==========================================================================
+   BARRA LATERAL (Escritorio / Laptop)
+   ========================================================================== */
+nav {
+    width: 300px;
+    background-color: var(--sidebar-bg);
+    color: var(--text-light);
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+    height: 100vh;
+    position: fixed;
+    top: 0; 
+    left: 0;
+    z-index: 99;
+    overflow-y: auto;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+nav::-webkit-scrollbar { 
+    width: 5px; 
+}
+nav::-webkit-scrollbar-thumb { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 10px; 
+}
+
+nav h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    margin-bottom: 35px;
+    color: var(--accent);
     text-align: center;
-    max-width: 500px;
+    letter-spacing: 1px;
+}
+
+.nav-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin: 25px 0 10px 10px;
+    font-weight: 700;
+    opacity: 0.9;
+}
+
+.tool-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     width: 100%;
 }
 
-h1 {
-    color: #e53935; /* Un color rojo similar al de iLovePDF */
-    margin-bottom: 10px;
+.tool-btn:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-light);
+    padding-left: 20px;
 }
 
-.subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 30px;
+.tool-btn.active {
+    border-left: 4px solid var(--accent);
+    background: rgba(249, 115, 22, 0.1);
+    color: var(--text-light);
+    font-weight: 600;
 }
 
+/* ==========================================================================
+   ÁREA DE TRABAJO PRINCIPAL (Contenedor Blanco Premium)
+   ========================================================================== */
+main {
+    flex-grow: 1;
+    margin-left: 300px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: calc(100% - 300px);
+    transition: all 0.4s;
+}
+
+.container {
+    max-width: 750px;
+    width: 100%;
+    background: var(--card-bg); /* Fondo Blanco Limpio */
+    padding: 50px 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    color: var(--text-dark);
+}
+
+.header-area h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+}
+
+.header-area p {
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-size: 15px;
+}
+
+/* ZONA DE ARRASTRE DE ARCHIVOS */
 .drop-zone {
-    border: 2px dashed #e53935;
-    border-radius: 8px;
-    padding: 40px 20px;
-    background-color: #fff8f8;
+    border: 2px dashed rgba(249, 115, 22, 0.4);
+    border-radius: 16px;
+    padding: 60px 20px;
+    background: #f8fafc;
     cursor: pointer;
+    transition: 0.3s all ease;
     position: relative;
-    margin-bottom: 25px;
-    transition: background 0.3s;
 }
 
 .drop-zone:hover {
-    background-color: #ffebee;
+    border-color: var(--accent);
+    background: rgba(249, 115, 22, 0.02);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
-/* Ocultamos el input feo por defecto pero lo dejamos cliqueable en toda la zona */
-.drop-zone input[type="file"] {
+.drop-zone i {
+    font-size: 48px;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.drop-zone p {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.drop-zone input {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    width: 100%; 
     height: 100%;
+    top: 0; 
+    left: 0;
     opacity: 0;
     cursor: pointer;
 }
 
-#file-count {
-    display: block;
-    margin-top: 15px;
-    font-size: 13px;
-    color: #888;
-    font-weight: bold;
+/* BOTONES DE ACCIÓN */
+.action-group {
+    margin-top: 40px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
 }
 
-button {
-    background-color: #e53935;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 6px;
+.btn {
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
     cursor: pointer;
-    width: 100%;
-    transition: background 0.3s;
+    border: none;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
 }
 
-button:hover {
-    background-color: #d32f2f;
+.btn-main { 
+    background: var(--accent); 
+    color: white; 
+    box-shadow: 0 4px 12px var(--accent-glow);
 }
 
-button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
+.btn-main:hover { 
+    background: #ea580c; 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
 }
 
-/* =======================================================
-    INTERFAZ EXCLUSIVA PARA CELULARES (ESTILO ILOVEPDF)
-   ======================================================= */
-@media (max-width: 768px) {
+.btn-main:disabled { 
+    background: #cbd5e1; 
+    color: #94a3b8; 
+    cursor: not-allowed; 
+    box-shadow: none;
+    transform: none;
+}
+
+.btn-cancel { 
+    background: #f1f5f9; 
+    color: var(--danger); 
+}
+
+.btn-cancel:hover { 
+    background: #fee2e2; 
+}
+
+/* LISTA DE ARCHIVOS */
+#file-list {
+    margin-top: 25px;
+    text-align: left;
+    font-size: 14px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.file-item {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-dark);
+}
+
+.counter-badge {
+    margin-top: 25px;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+/* CAPA OSCURA DE FONDO PARA EL MENÚ EN CELULARES */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 98;
+    backdrop-filter: blur(4px);
+}
+
+/* ==========================================================================
+   INTERFAZ TÁCTIL EXCLUSIVA PARA CELULARES (Estilo iLovePDF)
+   ========================================================================== */
+@media (max-width: 992px) {
+    .mobile-header { 
+        display: flex; 
+    }
     
-    /* 1. Fondo gris claro y scroll vertical natural */
-    body {
-        display: block !important;
-        height: auto !important;
-        min-height: 100vh !important;
-        background-color: #f4f4f7 !important; 
-        padding: 15px !important;
-        margin: 0 !important;
+    nav {
+        transform: translateX(-100%); /* Escondido a la izquierda */
+        padding-top: 80px; 
+        width: 280px;
     }
 
-    /* 2. MENU LATERAL: En celular pasa a ser solo un encabezado superior */
-    aside, .sidebar, [class*="sidebar"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-        background: #ffffff !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-        padding: 15px !important;
-        margin-bottom: 20px !important;
-        border-radius: 10px !important;
-        text-align: center !important;
+    nav.open {
+        transform: translateX(0); /* Entra deslizándose con suavidad */
     }
 
-    /* Oculta la lista de enlaces amontonados del menú en cel */
-    aside a, .sidebar a, .sidebar nav, [class*="sidebar"] ul, [class*="sidebar"] li {
-        display: none !important; 
+    main {
+        margin-left: 0;
+        width: 100%;
+        padding: 90px 16px 30px 16px; /* Espacio superior para que no tape la barra móvil */
     }
 
-    /* Destaca el nombre de tu App arriba en el centro */
-    aside h1, .sidebar h1, [class*="sidebar"] .logo {
-        display: block !important;
-        margin: 0 !important;
-        font-size: 20px !important;
-        color: #0f172a !important;
-        font-weight: bold !important;
+    .sidebar-overlay.active {
+        display: block;
     }
 
-    /* 3. ZONA CONTENEDORA DE LAS HERRAMIENTAS */
-    main, .main-content, [class*="content"], [class*="container"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: transparent !important; /* Quita fondos pesados */
-        box-shadow: none !important;
+    .container {
+        padding: 35px 20px;
     }
-
-    /* 4. LA MAGIA: Cuadrícula de 2 columnas como iLovePDF */
-    .grid-container, .tools-grid, [class*="grid"], [class*="buttons-layout"] {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important; /* Exactamente 2 botones por fila */
-        gap: 12px !important; /* Espacio limpio entre tarjetas */
-        padding: 5px !important;
+    
+    .action-group {
+        flex-direction: column-reverse; /* El botón principal queda arriba en celular, más cómodo */
     }
-
-    /* 5. TARJETAS / BOTONES: Se vuelven bloques interactivos con forma de app */
-    button, .card, .tool-card, [class*="button"] {
-        display: flex !important;
-        flex-direction: column !important; /* Ícono arriba, texto abajo */
-        align-items: center !important;
-        justify-content: center !important;
-        background-color: #ffffff !important; /* Fondo blanco limpio para cada botón */
-        color: #333333 !important;
-        height: 120px !important; /* Altura perfecta tipo tarjeta cuadrada */
-        width: 100% !important;
-        padding: 15px !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 12px !important; /* Bordes suavemente redondeados */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
-        transition: transform 0.2s !important;
-        cursor: pointer !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Efecto sutil al pulsar con el dedo */
-    button:active, .card:active {
-        transform: scale(0.96) !important;
-        background-color: #f8fafc !important;
-    }
-
-    /* Si usas iconos dentro del botón (SVG o imágenes), los acomoda centrados */
-    button img, button svg, [class*="icon"] {
-        margin-bottom: 8px !important;
-        width: 32px !important;
-        height: 32px !important;
+    
+    .btn { 
+        width: 100%; 
+        justify-content: center; 
     }
 }
