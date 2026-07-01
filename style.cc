@@ -89,11 +89,41 @@ button:disabled {
       background-color: #cccccc;
       cursor: not-allowed;
 }
-  
+
 /* --- CONFIGURACIÓN PARA CELULARES --- */
-  @media (max-width: 768px) {
-      body {
-          flex-direction: column;
-          padding: 10px;
-      }
+@media (max-width: 768px) {
+    body {
+        flex-direction: column !important; /* Pone el menú arriba y el contenido abajo */
+        height: auto !important;
+        min-height: 100vh;
+        padding: 0 !important;
+    }
+
+    /* Ajuste para el menú oscuro de la izquierda (organizadores) */
+    aside, .sidebar, [class*="sidebar"], [class*="menu"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        padding: 15px !important;
+        box-sizing: border-box;
+    }
+
+    /* Ajuste para la zona blanca de la derecha (donde se sube el PDF) */
+    main, .main-content, [class*="content"], [class*="container"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px !important;
+        box-sizing: border-box;
+    }
+
+    /* Ajuste para los botones de abajo (Cancelar, Procesar) */
+    .buttons-container, [class*="buttons"] {
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    button {
+        width: 100% !important; /* Los botones ocupan todo el ancho en cel */
+    }
 }
