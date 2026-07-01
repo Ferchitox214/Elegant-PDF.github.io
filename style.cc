@@ -86,6 +86,14 @@ button:hover {
 }
 
 button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+      background-color: #cccccc;
+      cursor: not-allowed;
+}
+  
+/* --- CONFIGURACIÓN PARA CELULARES --- */
+  @media (max-width: 768px) {
+      body {
+          flex-direction: column;
+          padding: 10px;
+      }
 }
