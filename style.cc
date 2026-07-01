@@ -91,89 +91,97 @@ button:disabled {
 }
 
 /* =======================================================
-   INTERFAZ PARA CELULARES
+    INTERFAZ EXCLUSIVA PARA CELULARES (ESTILO ILOVEPDF)
    ======================================================= */
 @media (max-width: 768px) {
     
-    /* 1. Hace que todo el cuerpo fluya hacia abajo verticalmente */
+    /* 1. Fondo gris claro y scroll vertical natural */
     body {
-        display: flex !important;
-        flex-direction: column !important;
+        display: block !important;
         height: auto !important;
-        min-height: 100vh;
+        min-height: 100vh !important;
+        background-color: #f4f4f7 !important; 
+        padding: 15px !important;
         margin: 0 !important;
-        padding: 0 !important;
-        background-color: #f8f9fa !important; /* Fondo gris claro limpio como iLovePDF */
     }
 
-    /* 2. MENU LATERAL (Elegant PDF): En cel se convierte en una barra superior discreta */
+    /* 2. MENU LATERAL: En celular pasa a ser solo un encabezado superior */
     aside, .sidebar, [class*="sidebar"] {
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
         position: relative !important;
+        background: #ffffff !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         padding: 15px !important;
-        box-sizing: border-box;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center;
-        border-bottom: 2px solid rgba(0,0,0,0.1);
+        margin-bottom: 20px !important;
+        border-radius: 10px !important;
+        text-align: center !important;
     }
 
-    /* Oculta los otros enlaces del menú que estorban en cel para que no se amontonen */
-    aside a, .sidebar a, .sidebar nav, [class*="sidebar"] ul {
-        display: none !important; /* iLovePDF solo muestra la herramienta actual en uso */
+    /* Oculta la lista de enlaces amontonados del menú en cel */
+    aside a, .sidebar a, .sidebar nav, [class*="sidebar"] ul, [class*="sidebar"] li {
+        display: none !important; 
     }
 
-    /* Mantiene solo el título "Elegant PDF" visible arriba */
+    /* Destaca el nombre de tu App arriba en el centro */
     aside h1, .sidebar h1, [class*="sidebar"] .logo {
         display: block !important;
         margin: 0 !important;
-        font-size: 22px !important;
+        font-size: 20px !important;
+        color: #0f172a !important;
+        font-weight: bold !important;
     }
 
-    /* 3. ZONA BLANCA PRINCIPAL: Se expande al 100% ocupando toda la pantalla */
+    /* 3. ZONA CONTENEDORA DE LAS HERRAMIENTAS */
     main, .main-content, [class*="content"], [class*="container"] {
-        flex: 1 !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: 20px !important;
         margin: 0 !important;
-        box-sizing: border-box;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important; /* Empuja los botones abajo */
+        padding: 0 !important;
+        background: transparent !important; /* Quita fondos pesados */
+        box-shadow: none !important;
     }
 
-    /* 4. EL CUADRO DE ARRASTRAR PDF: Se vuelve gigante y cómodo para el dedo */
-    .drop-zone, [class*="dropzone"], [class*="upload"] {
-        width: 100% !important;
-        height: 280px !important; /* Altura ideal fija para celulares */
-        margin: 20px 0 !important;
+    /* 4. LA MAGIA: Cuadrícula de 2 columnas como iLovePDF */
+    .grid-container, .tools-grid, [class*="grid"], [class*="buttons-layout"] {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* Exactamente 2 botones por fila */
+        gap: 12px !important; /* Espacio limpio entre tarjetas */
+        padding: 5px !important;
+    }
+
+    /* 5. TARJETAS / BOTONES: Se vuelven bloques interactivos con forma de app */
+    button, .card, .tool-card, [class*="button"] {
         display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
+        flex-direction: column !important; /* Ícono arriba, texto abajo */
         align-items: center !important;
+        justify-content: center !important;
+        background-color: #ffffff !important; /* Fondo blanco limpio para cada botón */
+        color: #333333 !important;
+        height: 120px !important; /* Altura perfecta tipo tarjeta cuadrada */
+        width: 100% !important;
+        padding: 15px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important; /* Bordes suavemente redondeados */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
+        transition: transform 0.2s !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        box-sizing: border-box !important;
     }
 
-    /* 5. BOTONES DE ACCIÓN: Se alinean abajo, grandes y de lado a lado */
-    .buttons-container, [class*="buttons"], .action-buttons {
-        display: flex !important;
-        flex-direction: column !important; /* Uno abajo del otro */
-        gap: 12px !important;
-        width: 100% !important;
-        margin-top: auto !important; /* Se pegan al final de la pantalla */
-        padding-bottom: 20px !important;
+    /* Efecto sutil al pulsar con el dedo */
+    button:active, .card:active {
+        transform: scale(0.96) !important;
+        background-color: #f8fafc !important;
     }
 
-    /* Botones gigantes estilo app móvil */
-    button, .btn, [class*="button"] {
-        width: 100% !important;
-        height: 50px !important; /* Más altos para que sea fácil picarles con el pulgar */
-        font-size: 16px !important;
-        font-weight: bold !important;
-        margin: 0 !important;
-        border-radius: 8px !important;
+    /* Si usas iconos dentro del botón (SVG o imágenes), los acomoda centrados */
+    button img, button svg, [class*="icon"] {
+        margin-bottom: 8px !important;
+        width: 32px !important;
+        height: 32px !important;
     }
 }
